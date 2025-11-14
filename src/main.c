@@ -29,16 +29,16 @@ void afficher_titre() {
 
 void afficher_instructions() {
     printf("%sℹ️  INSTRUCTIONS :%s\n", CYAN, RESET);
-    printf("  • Gerez vos ressources : %sPV, Oxygene, Fatigue%s\n", VERT, RESET);
-    printf("  • L'oxygene diminue a chaque action\n");
+    printf("  • Plongez dans les prodondeurs mystérieuses de l'océan et incarnez un explorateur\n");
+    printf("  • Gérez vos ressources : %sPV, Oxygene, Fatigue%s\n", VERT, RESET);
+    printf("  • L'oxygene diminue à chaque action\n");
     printf("  • La fatigue limite vos attaques par tour\n");
-    printf("  • Vaincez toutes les creatures pour gagner !\n");
-    printf("\n%sAppuyez sur Entree pour commencer...%s\n", CYAN, RESET);
+    printf("  • Vaincez toutes les créatures pour gagner !\n");
+    printf("\n%sAppuyez sur Entrée pour commencer...%s\n", CYAN, RESET);
     getchar();
 }
 
 int main() {
-    // init random
     srand(time(NULL));
 
     afficher_titre();
@@ -49,9 +49,9 @@ int main() {
     init_plongeur(&joueur);
 
     CreatureMarine creatures[4];
-    int profondeur = 120;
+    int profondeur = 30;
 
-    printf("%s\n🏊 Vous plongez a -%dm de profondeur...%s\n", CYAN, profondeur, RESET);
+    printf("%s\n🏊 Vous plongez à -%dm de profondeur...%s\n", CYAN, profondeur, RESET);
 
     // Generation automatique selon la profondeur
     generer_creatures(creatures, profondeur);
@@ -64,7 +64,7 @@ int main() {
         }
     }
 
-    printf("%s🦈 %d creature%s marine%s vous repere%s !%s\n\n",
+    printf("%s🦈 %d créature%s marine%s vous repère%s !%s\n\n",
            CYAN, nb_creatures,
            nb_creatures > 1 ? "s" : "",
            nb_creatures > 1 ? "s" : "",
@@ -76,7 +76,7 @@ int main() {
     int numero_tour = 1;
 
     while (combat_actif == 1) {
-        printf("\n%s%s═══════════════════ TOUR %d ═══════════════════%s\n",
+        printf("\n%s%s════════════════════════════════ TOUR %d ════════════════════════════════%s\n",
                GRAS, CYAN, numero_tour, RESET);
 
         combat_actif = faire_tour(&joueur, creatures, 4, profondeur);
@@ -99,14 +99,14 @@ int main() {
            GRAS, CYAN, RESET);
 
     if (plongeur_vivant(&joueur) == 1) {
-        printf("\n%s🎉 Felicitations ! Vous avez survecu !%s\n", VERT, RESET);
+        printf("\n%s🎉 Félicitations ! Vous avez survécu !%s\n", VERT, RESET);
         printf("%sStatistiques finales:%s\n", CYAN, RESET);
         printf("  • PV restants: %d/%d\n", joueur.vie, joueur.vie_max);
         printf("  • Oxygene: %d/%d\n", joueur.oxygene, joueur.oxygene_max);
         printf("  • Perles: %d\n", joueur.perles);
     } else {
-        printf("\n%s💀 Vous avez peri dans les profondeurs...%s\n", CYAN, RESET);
-        printf("%sMais ne vous decouragez pas ! Reessayez !%s\n", CYAN, RESET);
+        printf("\n%s💀 Vous avez péri dans les profondeurs...%s\n", CYAN, RESET);
+        printf("%sMais ne vous découragez pas ! Réessayez !%s\n", CYAN, RESET);
     }
 
     printf("\n");

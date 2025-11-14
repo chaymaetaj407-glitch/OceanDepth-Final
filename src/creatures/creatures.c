@@ -4,24 +4,47 @@
 #include "creatures.h"
 
 void generer_creatures(CreatureMarine creatures[4], int profondeur) {
-    int nb_creatures = 1 + (rand() % 4);
-
+    int nb_creatures;
+    
+    // Nombre de creatures selon la profondeur
+    if (profondeur < 100) {
+        nb_creatures = 1;
+    } else if (profondeur < 250) {
+        nb_creatures = 1 + (rand() % 2);
+    } else if (profondeur < 500) {
+        nb_creatures = 1 + (rand() % 3);
+    } else {
+        nb_creatures = 2 + (rand() % 2);
+    }
+    
     int pv_min, pv_max;
     int type_creature;
-
+    
     for (int i = 0; i < 4; i++) {
         if (i < nb_creatures) {
             creatures[i].id = i + 1;
             creatures[i].vivant = 1;
-
-            if (profondeur < 100) {
-                type_creature = rand() % 3 + 2;
-            } else if (profondeur < 200) {
-                type_creature = rand() % 4 + 1;
+            
+            // Selection de la créature selon la profondeur
+            if (profondeur < 50) {
+                type_creature = 2;
+            } else if (profondeur < 100) {
+                type_creature = (rand() % 2) + 1;
+            } else if (profondeur < 250) {
+                // Moyen (100-250m)
+                type_creature = (rand() % 3) + 1;
+            } else if (profondeur < 500) {
+                // Profond (250-500m)
+                int choix = rand() % 3;
+                if (choix == 0) type_creature = 0;
+                else if (choix == 1) type_creature = 1;
+                else type_creature = 3;
             } else {
-                type_creature = rand() % 5;
+                // Très profond (500+)
+                type_creature = rand() % 4;
+                if (type_creature == 2) type_creature = 4;
             }
-
+            
             switch(type_creature) {
                 case 0:
                     strcpy(creatures[i].nom, "Requin-Tigre");
@@ -35,9 +58,9 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].vitesse = 3;
                     strcpy(creatures[i].effet, "aucun");
                     break;
-
+                
                 case 1:
-                    strcpy(creatures[i].nom, "Meduse Bleue");
+                    strcpy(creatures[i].nom, "Méduse Bleue");
                     pv_min = 60;
                     pv_max = 100;
                     creatures[i].pv_max = pv_min + rand() % (pv_max - pv_min + 1);
@@ -46,11 +69,11 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].atk_max = 25;
                     creatures[i].defense = 8;
                     creatures[i].vitesse = 7;
-                    strcpy(creatures[i].effet, "aucun");
+                    strcpy(creatures[i].effet, "Paralysie");
                     break;
-
+                    
                 case 2:
-                    strcpy(creatures[i].nom, "Poisson-Epee");
+                    strcpy(creatures[i].nom, "Poisson-Épée");
                     pv_min = 20;
                     pv_max = 40;
                     creatures[i].pv_max = pv_min + rand() % (pv_max - pv_min + 1);
@@ -59,9 +82,9 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].atk_max = 15;
                     creatures[i].defense = 3;
                     creatures[i].vitesse = 4;
-                    strcpy(creatures[i].effet, "paralysie");
+                    strcpy(creatures[i].effet, "aucun");
                     break;
-
+                    
                 case 3:
                     strcpy(creatures[i].nom, "Kraken");
                     pv_min = 70;
@@ -74,9 +97,9 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].vitesse = 8;
                     strcpy(creatures[i].effet, "aucun");
                     break;
-
+                    
                 case 4:
-                    strcpy(creatures[i].nom, "Crabe Geant");
+                    strcpy(creatures[i].nom, "Crabe Géant");
                     pv_min = 80;
                     pv_max = 120;
                     creatures[i].pv_max = pv_min + rand() % (pv_max - pv_min + 1);

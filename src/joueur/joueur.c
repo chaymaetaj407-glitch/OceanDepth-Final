@@ -61,7 +61,7 @@ void afficher_barre(char* nom, int valeur, int max, int taille) {
 void afficher_plongeur(Plongeur* p, int profondeur) {
     printf("\n");
     printf("%s╔══════════════════════════════════════════════════════════════╗%s\n", CYAN, RESET);
-    printf("%s║  OceanDepths - Profondeur: -%dm          Perles: %d       ║%s\n", 
+    printf("%s║  OceanDepths - Profondeur: -%dm          Perles: %d           ║%s\n", 
            CYAN, profondeur, p->perles, RESET);
     printf("%s╚══════════════════════════════════════════════════════════════╝%s\n", CYAN, RESET);
     printf("\n");
@@ -107,7 +107,7 @@ int perdre_oxygene(Plongeur* p, int quantite) {
     p->oxygene = p->oxygene - quantite;
     if (p->oxygene < 0) p->oxygene = 0;
     
-    printf("%sOxygene consomme: -%d (Reste: %d/%d)%s\n", 
+    printf("%sOxygène consommé: -%d (Reste: %d/%d)%s\n", 
            CYAN, quantite, p->oxygene, p->oxygene_max, RESET);
     
     // si plus d oxygene on perd des pv
@@ -126,7 +126,7 @@ void augmenter_fatigue(Plongeur* p, int valeur) {
     p->fatigue = p->fatigue + valeur;
     if (p->fatigue > 5) p->fatigue = 5;
     
-    printf("%sFatigue augmentee: +%d (Total: %d/5)%s\n", 
+    printf("%sFatigue augmentée: +%d (Total: %d/5)%s\n", 
            JAUNE, valeur, p->fatigue, RESET);
 }
 
@@ -136,7 +136,7 @@ void recuperer_fatigue(Plongeur* p, int valeur) {
     if (p->fatigue < 0) p->fatigue = 0;
     
     if (avant > p->fatigue) {
-        printf("%sFatigue recuperee: -%d (Total: %d/5)%s\n", 
+        printf("%sFatigue récupérée: -%d (Total: %d/5)%s\n", 
                VERT, valeur, p->fatigue, RESET);
     }
 }
@@ -154,7 +154,7 @@ void soigner(Plongeur* p, int montant) {
     if (p->vie > p->vie_max) p->vie = p->vie_max;
     
     int gagne = p->vie - avant;
-    printf("%s💚 Vous recuperez %d PV ! (Total: %d/%d)%s\n", 
+    printf("%s💚 Vous récupérez %d PV ! (Total: %d/%d)%s\n", 
            VERT, gagne, p->vie, p->vie_max, RESET);
 }
 
@@ -164,7 +164,7 @@ void remettre_oxygene(Plongeur* p, int montant) {
     if (p->oxygene > p->oxygene_max) p->oxygene = p->oxygene_max;
     
     int gagne = p->oxygene - avant;
-    printf("%s💧 Oxygene restaure: +%d ! (Total: %d/%d)%s\n", 
+    printf("%s💧 Oxygène restauré: +%d ! (Total: %d/%d)%s\n", 
            CYAN, gagne, p->oxygene, p->oxygene_max, RESET);
 }
 
