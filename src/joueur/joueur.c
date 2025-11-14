@@ -61,7 +61,7 @@ void afficher_barre(char* nom, int valeur, int max, int taille) {
 void afficher_plongeur(Plongeur* p, int profondeur) {
     printf("\n");
     printf("%s╔══════════════════════════════════════════════════════════════╗%s\n", CYAN, RESET);
-    printf("%s║  OceanDepths - Profondeur: -%dm          Perles: %d       ║%s\n", 
+    printf("%s║  OceanDepths - Profondeur: -%dm          Perles: %d           ║%s\n", 
            CYAN, profondeur, p->perles, RESET);
     printf("%s╚══════════════════════════════════════════════════════════════╝%s\n", CYAN, RESET);
     printf("\n");
@@ -83,7 +83,7 @@ void afficher_plongeur(Plongeur* p, int profondeur) {
     
     // alerte oxygene
     if (p->oxygene <= 10) {
-        printf("\n%s%s⚠️  ALERTE CRITIQUE - OXYGENE EPUISE ! ⚠️%s\n", GRAS, ROUGE, RESET);
+        printf("\n%s%s⚠️  ALERTE CRITIQUE - OXYGÈNE ÉPUISÉ ! ⚠️%s\n", GRAS, ROUGE, RESET);
         printf("%sUtilisez une capsule ou remontez !%s\n", ROUGE, RESET);
     }
     
@@ -103,22 +103,67 @@ void perdre_vie(Plongeur* p, int degats) {
            ROUGE, degats_reels, p->vie, p->vie_max, RESET);
 }
 
+int calculer_conso_oxygene(int profondeur, int type_action) {
+    int base = 0;
+    
+    // Cout de base selon le type d'action et la profondeur
+    // type_action: 0 = attaque normale, 1 = competence, 2 = fin de tour
+    
+    if (type_action == 0) {
+        if (profondeur < 100) {
+            base = 2;
+        } else if (profondeur < 250) {
+            base = 3;
+        } else if (profondeur < 500) {
+            base = 4;
+        } else {
+            base = 5;
+        }
+    } else if (type_action == 1) {
+        if (profondeur < 100) {
+            base = 5;
+        } else if (profondeur < 250) {
+            base = 6;
+        } else if (profondeur < 500) {
+            base = 7;
+        } else {
+            base = 8;
+        }
+    } else if (type_action == 2) {
+        if (profondeur < 250) {
+            base = 2;
+        } else if (profondeur < 500) {
+            base = 3;
+        } else {
+            base = 4;
+        }
+    }
+    
+    return base;
+}
+
 int perdre_oxygene(Plongeur* p, int quantite) {
     p->oxygene = p->oxygene - quantite;
     if (p->oxygene < 0) p->oxygene = 0;
     
-    printf("%sOxygene consomme: -%d (Reste: %d/%d)%s\n", 
+    printf("%sOxygène consommé: -%d (Reste: %d/%d)%s\n", 
            CYAN, quantite, p->oxygene, p->oxygene_max, RESET);
     
-    // si plus d oxygene on perd des pv
-    if (p->oxygene == 0) {
-        printf("%s⚠️  MANQUE D'OXYGENE ! Vous perdez 5 PV !%s\n", ROUGE, RESET);
-        p->vie = p->vie - 5;
-        if (p->vie < 0) p->vie = 0;
+    if (p->oxygene > 0 && p->oxygene <= 10) {
+        printf("%s⚠️  OXYGÈNE CRITIQUE ! ⚠️%s\n", ROUGE, RESET);
+        return 1;
     }
     
-    // retourne 1 si critique
-    if (p->oxygene <= 10) return 1;
+    // Si plus d'oxygene : degats a chaque tour
+    if (p->oxygene == 0) {
+        printf("%s⚠️  MANQUE D'OXYGÈNE ! Vous perdez 5 PV !%s\n", ROUGE, RESET);
+        p->vie = p->vie - 5;
+        if (p->vie < 0) p->vie = 0;
+
+        // Retourne 2 pour indiquer danger mortel
+        return 2;
+    }
+    
     return 0;
 }
 
@@ -126,7 +171,7 @@ void augmenter_fatigue(Plongeur* p, int valeur) {
     p->fatigue = p->fatigue + valeur;
     if (p->fatigue > 5) p->fatigue = 5;
     
-    printf("%sFatigue augmentee: +%d (Total: %d/5)%s\n", 
+    printf("%sFatigue augmentée: +%d (Total: %d/5)%s\n", 
            JAUNE, valeur, p->fatigue, RESET);
 }
 
@@ -136,12 +181,11 @@ void recuperer_fatigue(Plongeur* p, int valeur) {
     if (p->fatigue < 0) p->fatigue = 0;
     
     if (avant > p->fatigue) {
-        printf("%sFatigue recuperee: -%d (Total: %d/5)%s\n", 
+        printf("%sFatigue récupérée: -%d (Total: %d/5)%s\n", 
                VERT, valeur, p->fatigue, RESET);
     }
 }
 
-// TODO: verifier si ces valeurs sont bonnes
 int attaques_possibles(Plongeur* p) {
     if (p->fatigue <= 1) return 3;
     if (p->fatigue <= 3) return 2;
@@ -154,7 +198,7 @@ void soigner(Plongeur* p, int montant) {
     if (p->vie > p->vie_max) p->vie = p->vie_max;
     
     int gagne = p->vie - avant;
-    printf("%s💚 Vous recuperez %d PV ! (Total: %d/%d)%s\n", 
+    printf("%s💚 Vous récupérez %d PV ! (Total: %d/%d)%s\n", 
            VERT, gagne, p->vie, p->vie_max, RESET);
 }
 
@@ -164,7 +208,7 @@ void remettre_oxygene(Plongeur* p, int montant) {
     if (p->oxygene > p->oxygene_max) p->oxygene = p->oxygene_max;
     
     int gagne = p->oxygene - avant;
-    printf("%s💧 Oxygene restaure: +%d ! (Total: %d/%d)%s\n", 
+    printf("%s💧 Oxygène restauré: +%d ! (Total: %d/%d)%s\n", 
            CYAN, gagne, p->oxygene, p->oxygene_max, RESET);
 }
 

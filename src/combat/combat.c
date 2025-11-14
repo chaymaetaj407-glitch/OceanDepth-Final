@@ -43,26 +43,26 @@ void afficher_combat(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
         }
     }
     
-    printf("%s└────────────────────────────────────────────────────────────────┘%s\n", 
+    printf("%s└───────────────────────────────────────────────────────────────┘%s\n", 
            CYAN, RESET);
 }
 
 void afficher_menu(Plongeur* p, int attaques_restantes) {
     printf("\n%s╔════════════════ ACTIONS DISPONIBLES ═══════════════╗%s\n", 
            VERT, RESET);
-    printf("%s║%s 1 - Attaquer avec harpon (%d attaque%s restante%s) %s║%s\n", 
+    printf("%s║%s 1 - Attaquer avec harpon (%d attaque%s restante%s)    %s║%s\n", 
            VERT, RESET, 
            attaques_restantes, 
            attaques_restantes > 1 ? "s" : "",
            attaques_restantes > 1 ? "s" : "",
            VERT, RESET);
-    printf("%s║%s 2 - Utiliser competence marine                   %s║%s\n", 
+    printf("%s║%s 2 - Utiliser compétence marine                     %s║%s\n", 
            VERT, RESET, VERT, RESET);
-    printf("%s║%s 3 - Consommer objet                              %s║%s\n", 
+    printf("%s║%s 3 - Consommer objet                                %s║%s\n", 
            VERT, RESET, VERT, RESET);
-    printf("%s║%s 4 - Terminer le tour                             %s║%s\n", 
+    printf("%s║%s 4 - Terminer le tour                               %s║%s\n", 
            VERT, RESET, VERT, RESET);
-    printf("%s╚═════════════════════════════════════════════════════╝%s\n", 
+    printf("%s╚════════════════════════════════════════════════════╝%s\n", 
            VERT, RESET);
     printf("> ");
 }
@@ -93,7 +93,7 @@ void animation_attaque(char* attaquant, char* cible, int degats) {
            BLEU, RESET, attaquant, cible, BLEU, RESET);
     printf("%s║                                                            ║%s\n", 
            BLEU, RESET);
-    printf("%s║%s    PLONGEUR    %sVS%s      CREATURE                       %s║%s\n", 
+    printf("%s║%s    PLONGEUR    %sVS%s      CRÉATURE                       %s║%s\n", 
            BLEU, RESET, ROUGE, RESET, BLEU, RESET);
     printf("%s║%s       🤿         %s🎯%s         🦈                           %s║%s\n", 
            BLEU, RESET, JAUNE, RESET, BLEU, RESET);
@@ -101,7 +101,7 @@ void animation_attaque(char* attaquant, char* cible, int degats) {
            BLEU, RESET, BLEU, RESET);
     printf("%s║                                                            ║%s\n", 
            BLEU, RESET);
-    printf("%s║%s 💥 Degats infliges: %s%d points%s                           %s║%s\n", 
+    printf("%s║%s 💥 Dégâts infligés: %s%d points%s                           %s║%s\n", 
            BLEU, RESET, ROUGE, degats, RESET, BLEU, RESET);
     printf("%s╚════════════════════════════════════════════════════════════╝%s\n", 
            BLEU, RESET);
@@ -137,7 +137,7 @@ ResultatAttaque attaquer(Plongeur* p, CreatureMarine* c, int prof) {
     if (c->pv <= 0) {
         c->pv = 0;
         c->vivant = 0;
-        printf("%s💀 %s a ete vaincu !%s\n", VERT, c->nom, RESET);
+        printf("%s💀 %s a été vaincu !%s\n", VERT, c->nom, RESET);
     } else {
         // riposte
         printf("%s%s riposte ! 🦈%s\n", ROUGE, c->nom, RESET);
@@ -166,7 +166,7 @@ int compter_vivants(CreatureMarine* creatures, int nb) {
 }
 
 int choisir_cible(CreatureMarine* creatures, int nb) {
-    printf("\n%sSelectionnez votre cible:%s\n", GRAS, RESET);
+    printf("\n%sSélectionnez votre cible:%s\n", GRAS, RESET);
     
     int cibles[10];
     int nb_cibles = 0;
@@ -216,7 +216,7 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
         int choix;
         if (scanf("%d", &choix) != 1) {
             while (getchar() != '\n');
-            printf("%sEntree invalide !%s\n", ROUGE, RESET);
+            printf("%sEntrée invalide !%s\n", ROUGE, RESET);
             continue;
         }
         
@@ -229,22 +229,22 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
                 
                 // check victoire
                 if (compter_vivants(creatures, nb) == 0) {
-                    printf("\n%s🎉 VICTOIRE ! Toutes les creatures sont vaincues ! 🎉%s\n", 
+                    printf("\n%s🎉 VICTOIRE ! Toutes les créatures sont vaincues ! 🎉%s\n", 
                            VERT, RESET);
                     return 0;
                 }
                 
                 // check defaite
                 if (plongeur_vivant(p) == 0) {
-                    printf("\n%s💀 DEFAITE ! Vous avez succombe aux profondeurs... 💀%s\n", 
+                    printf("\n%s💀 DÉFAITE ! Vous avez succombé aux profondeurs... 💀%s\n", 
                            ROUGE, RESET);
                     return 0;
                 }
             }
         } else if (choix == 2) {
-            printf("%s⚠️  Competences non implementees !%s\n", JAUNE, RESET);
+            printf("%s⚠️  Competences non implementées !%s\n", JAUNE, RESET);
         } else if (choix == 3) {
-            printf("%s⚠️  Inventaire non implemente !%s\n", JAUNE, RESET);
+            printf("%s⚠️  Inventaire non implementé !%s\n", JAUNE, RESET);
         } else if (choix == 4) {
             printf("%s➡️  Fin du tour...%s\n", CYAN, RESET);
             break;
@@ -261,12 +261,12 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
     recuperer_fatigue(p, 1);
     
     if (plongeur_vivant(p) == 0) {
-        printf("\n%s💀 DEFAITE ! Vous avez succombe aux profondeurs... 💀%s\n", 
+        printf("\n%s💀 DÉFAITE ! Vous avez succombé aux profondeurs... 💀%s\n", 
                ROUGE, RESET);
         return 0;
     }
     
-    printf("\n%sAppuyez sur Entree pour continuer...%s", CYAN, RESET);
+    printf("\n%sAppuyez sur Entrée pour continuer...%s", CYAN, RESET);
     while (getchar() != '\n');
     getchar();
     
