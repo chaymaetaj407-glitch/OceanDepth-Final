@@ -2,21 +2,7 @@
 #define COMBAT_H
 
 #include "../joueur/joueur.h"
-
-// structure creature
-// note: normalement ca devrait etre dans creatures.h
-typedef struct {
-    int id;
-    char nom[30];
-    int pv_max;
-    int pv;
-    int atk_min;
-    int atk_max;
-    int defense;
-    int vitesse;
-    char effet[20];
-    int vivant;
-} CreatureMarine;
+#include "../creatures/creatures.h"
 
 // resultat d'une attaque
 typedef struct {

@@ -16,12 +16,14 @@ OBJ_DIR = $(BUILD_DIR)/obj
 # Fichiers sources
 SOURCES = $(SRC_DIR)/main.c \
           $(SRC_DIR)/joueur/joueur.c \
-          $(SRC_DIR)/combat/combat.c
+          $(SRC_DIR)/combat/combat.c \
+          $(SRC_DIR)/creatures/creatures.c
 
 # Fichiers objets
 OBJECTS = $(OBJ_DIR)/main.o \
           $(OBJ_DIR)/joueur.o \
-          $(OBJ_DIR)/combat.o
+          $(OBJ_DIR)/combat.o \
+          $(OBJ_DIR)/creatures.o
 
 # Regle par defaut
 all: $(BUILD_DIR)/$(TARGET)
@@ -50,6 +52,11 @@ $(OBJ_DIR)/joueur.o: $(SRC_DIR)/joueur/joueur.c
 $(OBJ_DIR)/combat.o: $(SRC_DIR)/combat/combat.c
 	@mkdir -p $(OBJ_DIR)
 	@echo "Compilation de combat.c..."
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJ_DIR)/creatures.o: $(SRC_DIR)/creatures/creatures.c
+	@mkdir -p $(OBJ_DIR)
+	@echo "Compilation de creatures.c..."
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Nettoyer
