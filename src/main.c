@@ -99,15 +99,6 @@ int main() {
         printf("\n%s💀 Vous avez péri dans les profondeurs...%s\n", CYAN, RESET);
         printf("%sMais ne vous découragez pas ! Réessayez !%s\n", CYAN, RESET);
     }
-
-    // resultat
-    printf("\n");
-    printf("%s%s╔════════════════════════════════════════════════════════════════╗%s\n",
-           GRAS, CYAN, RESET);
-    printf("%s%s║                      FIN DE LA DEMO                            ║%s\n",
-           GRAS, CYAN, RESET);
-    printf("%s%s╚════════════════════════════════════════════════════════════════╝%s\n",
-           GRAS, CYAN, RESET);
     printf("\n");
     
     return 0;

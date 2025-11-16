@@ -1,92 +1,131 @@
-# OceanDepth - Etape 2
+# OceanDepth
 
 ## Groupe
-- TAJ: Integration et tests
-- ASSIA: Module joueur  
-- JORDAN: Module combat
+- **Chaymae** : Integration et tests
+- **Assia** : Module joueur  
+- **Jordan** : Module combat / monstres
 
-## Description
+## 📖 Description du projet
 
-On a fait l'etape 2 du projet OceanDepth. C'est le systeme d'attaque du plongeur.
+OceanDepth est un jeu de simulation de plongée sous-marine en mode texte. Le joueur incarne un plongeur qui doit explorer les profondeurs océaniques, affronter des créatures marines dangereuses et gérer ses ressources vitales (vie, oxygène, fatigue) pour survivre.
 
-Le joueur peut attaquer des creatures marines et il faut gerer son oxygene et sa fatigue.
+Le projet implémente actuellement un système de combat complet avec génération dynamique de créatures selon la profondeur, compétences spéciales et gestion avancée des ressources.
 
-## Comment compiler
+## 🚀 Installation et lancement
 
+### Compilation
 ```bash
 make
 ```
 
-## Comment lancer
-
+### Exécution
+```bash
+make run
+```
+ou
 ```bash
 ./build/oceandepths
 ```
 
-## Ce qu'on a fait
+### Nettoyage
+```bash
+make clean
+```
 
-### Module Joueur (ASSIA)
-- Structure Plongeur avec vie, oxygene, fatigue, perles
-- Fonctions pour initialiser et afficher le plongeur
-- Barres de progression pour voir l'etat
-- Alertes quand l'oxygene est critique
+## 🎮 Fonctionnalités implémentées (version courte)
 
-### Module Combat (JORDAN)
-- Systeme d'attaque avec harpon
-- Calcul des degats
-- Animations de combat
-- Gestion de l'oxygene qui diminue
-- Systeme de fatigue qui limite les attaques
+### Module Joueur (Assia)
 
-### Integration (TAJ)
-- Assemblage des modules
-- Main.c pour faire marcher le tout
-- Makefile pour compiler facilement
-- Tests avec valgrind
+- Statistiques complètes (PV, attaque, défense).
+- Gestion de l’oxygène, de la fatigue et des alertes visuelles.
+- Affichage du statut avec barres de progression colorées.
+- Consommation d’oxygène variable selon la profondeur.
+- Limite d’actions par tour via le système de fatigue.
 
-## Comment ca marche
+### Module Créatures (Jordan)
 
-Le plongeur a 3 ressources:
-- **Vie**: si ca tombe a 0 c'est game over
-- **Oxygene**: diminue a chaque action, si 0 on perd de la vie
-- **Fatigue**: limite le nombre d'attaques par tour
-  - Fatigue 0-1: 3 attaques max
-  - Fatigue 2-3: 2 attaques max  
-  - Fatigue 4-5: 1 attaque max
+- Génération procédurale selon la profondeur.
+- 5 créatures aux comportements et compétences uniques.
+- Difficulté progressive en fonction de la zone explorée.
 
-Quand on attaque:
-1. On choisit une creature
-2. On calcule les degats = attaque - defense
-3. On enleve les PV de la creature
-4. Elle riposte si elle est encore vivante
-5. On consomme de l'oxygene
-6. La fatigue augmente
+### Module Combat (Jordan)
 
-## Tests
+- Attaques au harpon, coups critiques et ripostes automatiques.
+- Intégration complète des compétences spéciales ennemies.
+- Gestion de l’initiative et animations de combat.
+- Consommation d’oxygène dynamique selon les actions.
 
-On a teste avec valgrind pour verifier qu'il n'y a pas de fuites memoire:
+### Integration (Chaymae)
+- Architecture modulaire claire (joueur, combat, créatures).
+- Boucle de jeu gérant les tours, victoire/défaite.
+- Makefile optimisé, interface en couleurs ANSI.
 
+## 🎯 Mécaniques de jeu
+
+### Ressources du joueur :
+- Vie (100) : si 0 → Game Over.
+- Oxygène (100) : Diminue considérablement selon la profondeur.
+  - Attaque : 2 à 5
+  - Compétence : 5 à 8
+  - Fin de tour : 2 à 4
+  - Pénalité de -5 PV/tour à 0.
+- Fatigue (0–5) : limite les attaques disponibles.
+  - 0–1 → 3 actions/ tour
+  - 2–3 → 2 actions
+  - 4–5 → 1 action
+  - -1 fatigue en fin de tour
+
+### Progression
+Plus on descend, plus on affronte de créatures puissantes et variées (1 à 3 par zone).
+
+## 🧪 Tests et validation
+
+### Tests mémoire
 ```bash
 make valgrind
 ```
+✅ Aucune fuite mémoire détectée
 
 Resultat: Pas de fuites detectees !
 
-## Prochaines etapes
+## 📁 Structure du projet
+```
+oceandepth/
+├── Makefile
+├── README.md
+├── src/
+│   ├── main.c
+│   ├── joueur/
+│   │   ├── joueur.h
+│   │   └── joueur.c
+│   ├── combat/
+│   │   ├── combat.h
+│   │   └── combat.c
+│   └── creatures/
+│       ├── creatures.h
+│       └── creatures.c
+└── build/
+    ├── obj/
+    └── oceandepths
+```
 
-- Etape 3: Faire attaquer les creatures (ordre par vitesse, effets speciaux)
-- Etape 4: Systeme de recompenses et inventaire
-- Etape 5: Sauvegarde et chargement
+## 🔮 Fonctionnalités à venir
 
-## Problemes rencontres
+### Prochaines étapes prévues
+- [X] Compétences spéciales du joueur
+- [ ] Système d'inventaire et objets consommables
+- [ ] Récompenses et butin après combat (perles, équipement)
+- [ ] Système de progression et d'amélioration
+- [ ] Sauvegarde et chargement de parties
+- [ ] Exploration multi-niveaux
 
-- Au debut on avait des erreurs de compilation a cause des includes
-- On a du changer les noms de variables pour eviter les conflits
-- Sur Windows ca compile pas facilement, il faut utiliser Linux ou WSL
+## 📝 Notes techniques
 
-## Notes
+- **Langage**: C (norme C99)
+- **Affichage**: Couleurs ANSI et caractères Unicode
+- **Nombres aléatoires**: `rand()` initialisé avec `srand(time(NULL))`
+- **Gestion mémoire**: Aucune allocation dynamique (structures statiques)
 
-Le code est fait en C avec la norme C99.
-On utilise des couleurs ANSI pour rendre l'affichage plus joli.
+## 📅 Informations du projet
 
-Date de fin: 13 novembre 2025
+- **Date de réalisation**: 16 Novembre 2025
