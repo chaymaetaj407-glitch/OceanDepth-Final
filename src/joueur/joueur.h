@@ -23,6 +23,9 @@ void afficher_plongeur(Plongeur* p, int profondeur);
 // enlever des pv
 void perdre_vie(Plongeur* p, int degats);
 
+// calculer consommation oxygene selon profondeur et action
+int calculer_conso_oxygene(int profondeur, int type_action);
+
 // consommer de l'oxygene
 int perdre_oxygene(Plongeur* p, int quantite);
 

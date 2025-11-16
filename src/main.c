@@ -89,15 +89,6 @@ int main() {
         }
     }
 
-    // resultat
-    printf("\n");
-    printf("%s%s╔════════════════════════════════════════════════════════════════╗%s\n",
-           GRAS, CYAN, RESET);
-    printf("%s%s║                      FIN DE LA DEMO                            ║%s\n",
-           GRAS, CYAN, RESET);
-    printf("%s%s╚════════════════════════════════════════════════════════════════╝%s\n",
-           GRAS, CYAN, RESET);
-
     if (plongeur_vivant(&joueur) == 1) {
         printf("\n%s🎉 Félicitations ! Vous avez survécu !%s\n", VERT, RESET);
         printf("%sStatistiques finales:%s\n", CYAN, RESET);
@@ -108,8 +99,7 @@ int main() {
         printf("\n%s💀 Vous avez péri dans les profondeurs...%s\n", CYAN, RESET);
         printf("%sMais ne vous découragez pas ! Réessayez !%s\n", CYAN, RESET);
     }
-
     printf("\n");
-
+    
     return 0;
 }
