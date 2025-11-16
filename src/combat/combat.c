@@ -16,30 +16,25 @@ void afficher_combat(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
     afficher_plongeur(p, prof);
     
     // liste des creatures
-    printf("\n%s┌────────────────────── CREATURES MARINES ──────────────────────┐%s\n", 
+    printf("\n%s┌────────────────────── CRÉATURES MARINES ──────────────────────┐%s\n", 
            CYAN, RESET);
     
     int i;
     for (i = 0; i < nb; i++) {
         if (creatures[i].vivant == 1) {
-            // emoji
             char* emoji = "🐠";
             if (strstr(creatures[i].nom, "Kraken")) emoji = "🐙";
             else if (strstr(creatures[i].nom, "Requin")) emoji = "🦈";
-            else if (strstr(creatures[i].nom, "Meduse")) emoji = "🪼";
+            else if (strstr(creatures[i].nom, "Méduse")) emoji = "🪼";
             else if (strstr(creatures[i].nom, "Crabe")) emoji = "🦀";
             else if (strstr(creatures[i].nom, "Poisson")) emoji = "🐠";
             
             printf("%s│ %s %s%s", CYAN, emoji, GRAS, RESET);
             printf("%s%-20s ", creatures[i].nom, CYAN);
             printf("(%d/%d PV)", creatures[i].pv, creatures[i].pv_max);
-            
-            // effet special
-            if (strcmp(creatures[i].effet, "aucun") != 0) {
-                printf(" [%s%s%s]", JAUNE, creatures[i].effet, CYAN);
-            }
-            
-            printf("%s%s\n", CYAN, RESET);
+            printf(" [%s%s%s]", JAUNE, creatures[i].effet, CYAN);
+            printf("%s%s", CYAN, RESET);
+            printf("%s | %s%s\n", CYAN, GRAS, RESET);
         }
     }
     
@@ -85,23 +80,54 @@ int calculer_degats(int attaque, int defense, int variable) {
     return degats;
 }
 
+// Calcul des degats d'une creature avec ses competences speciales
+int calculer_degats_creature(CreatureMarine* c, int defense_joueur) {
+    // Degats de base
+    int degats = (c->atk_min + c->atk_max) / 2;
+    degats = degats + (rand() % 6) - 3;
+    
+    // Applique la competence de la creature
+    int resultat_competence = appliquer_competence_creature(c, degats);
+    
+    if (resultat_competence == -1) {
+        return -1;
+    }
+    
+    degats = resultat_competence;
+    
+    int defense_finale = defense_joueur;
+    
+    if (strstr(c->nom, "Poisson-Épée")) {
+        defense_finale = defense_joueur - 2;
+        if (defense_finale < 0) defense_finale = 0;
+        printf("%s⚔️  Le Poisson-Épée perce votre défense ! ⚔️%s\n", 
+               JAUNE, RESET);
+    }
+    
+    degats = degats - defense_finale;
+    
+    if (degats < 1) degats = 1;
+    
+    return degats;
+}
+
 void animation_attaque(char* attaquant, char* cible, int degats) {
     printf("\n");
     printf("%s╔════════════════════ COMBAT SOUS-MARIN ════════════════════╗%s\n", 
            BLEU, RESET);
-    printf("%s║%s %s attaque %s avec le harpon ! %s║%s\n", 
+    printf("%s║%s %s attaque %s avec le harpon !           %s║%s\n", 
            BLEU, RESET, attaquant, cible, BLEU, RESET);
-    printf("%s║                                                            ║%s\n", 
+    printf("%s║                                                           ║%s\n", 
            BLEU, RESET);
-    printf("%s║%s    PLONGEUR    %sVS%s      CRÉATURE                       %s║%s\n", 
+    printf("%s║%s    PLONGEUR    %sVS%s      CRÉATURE                             %s║%s\n", 
            BLEU, RESET, ROUGE, RESET, BLEU, RESET);
-    printf("%s║%s       🤿         %s🎯%s         🦈                           %s║%s\n", 
+    printf("%s║%s       🤿         %s🎯%s         🦈                            %s║%s\n", 
            BLEU, RESET, JAUNE, RESET, BLEU, RESET);
-    printf("%s║%s    ════════►   ◄════════                                %s║%s\n", 
+    printf("%s║%s    ════════►   ◄════════                                   %s║%s\n", 
            BLEU, RESET, BLEU, RESET);
-    printf("%s║                                                            ║%s\n", 
+    printf("%s║                                                          ║%s\n", 
            BLEU, RESET);
-    printf("%s║%s 💥 Dégâts infligés: %s%d points%s                           %s║%s\n", 
+    printf("%s║%s 💥 Dégâts infligés: %s%d points%s                              %s║%s\n", 
            BLEU, RESET, ROUGE, degats, RESET, BLEU, RESET);
     printf("%s╚════════════════════════════════════════════════════════════╝%s\n", 
            BLEU, RESET);
@@ -114,12 +140,22 @@ ResultatAttaque attaquer(Plongeur* p, CreatureMarine* c, int prof) {
     resultat.oxygene_utilise = 0;
     resultat.fatigue_ajoutee = 0;
     resultat.critique = 0;
+    resultat.paralysie_activee = 0;
     
     // check si vivante
     if (c->vivant == 0) return resultat;
     
     // calcul degats
     resultat.degats = calculer_degats(p->attaque, c->defense, 1);
+    
+    // Crabe Geant : "Carapace durcie"
+    if (strstr(c->nom, "Crabe Géant")) {
+        int reduction = (int)(resultat.degats * 0.2);
+        resultat.degats = resultat.degats - reduction;
+        if (resultat.degats < 1) resultat.degats = 1;
+        printf("\n%s🛡️  La carapace du Crabe absorbe %d dégâts ! 🛡️%s\n", 
+               CYAN, reduction, RESET);
+    }
     
     // coup critique 10%
     int chance = rand() % 100;
@@ -141,13 +177,28 @@ ResultatAttaque attaquer(Plongeur* p, CreatureMarine* c, int prof) {
     } else {
         // riposte
         printf("%s%s riposte ! 🦈%s\n", ROUGE, c->nom, RESET);
-        int degats_riposte = calculer_degats((c->atk_min + c->atk_max) / 2, p->defense, 1);
+        int degats_riposte = calculer_degats_creature(c, p->defense);
+        
+        // Si la fonction retourne -1, joueur paralysé
+        if (degats_riposte == -1) {
+            resultat.paralysie_activee = 1;
+            degats_riposte = calculer_degats((c->atk_min + c->atk_max) / 2, p->defense, 1);
+        }
+        
         perdre_vie(p, degats_riposte);
     }
     
-    // conso oxygene
-    resultat.oxygene_utilise = 2 + (prof / 100);
-    perdre_oxygene(p, resultat.oxygene_utilise);
+    // Consommation oxygene
+    resultat.oxygene_utilise = calculer_conso_oxygene(prof, 0);
+    int etat_oxy = perdre_oxygene(p, resultat.oxygene_utilise);
+    
+    if (etat_oxy == 1) {
+        printf("%s💡 Conseil: Terminez vite le combat ou restaurez votre oxygène !%s\n", 
+               JAUNE, RESET);
+    } else if (etat_oxy == 2) {
+        printf("%s☠️  DANGER IMMINENT ! Vous perdrez 5 PV à chaque tour !%s\n", 
+               ROUGE, RESET);
+    }
     
     // fatigue
     resultat.fatigue_ajoutee = 1;
@@ -202,13 +253,13 @@ int choisir_cible(CreatureMarine* creatures, int nb) {
     return cibles[choix - 1];
 }
 
-// FIXME: ameliorer cette fonction plus tard
 int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
     afficher_combat(p, creatures, nb, prof);
     
     // actions joueur
     int attaques_max = attaques_possibles(p);
     int attaques_faites = 0;
+    int joueur_paralyse = 0;
     
     while (attaques_faites < attaques_max) {
         afficher_menu(p, attaques_max - attaques_faites);
@@ -224,8 +275,13 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
             // attaquer
             int cible = choisir_cible(creatures, nb);
             if (cible >= 0) {
-                attaquer(p, &creatures[cible], prof);
+                ResultatAttaque res = attaquer(p, &creatures[cible], prof);
                 attaques_faites++;
+                
+                // Si la Méduse a paralysé le joueur
+                if (res.paralysie_activee == 1) {
+                    joueur_paralyse = 1;
+                }
                 
                 // check victoire
                 if (compter_vivants(creatures, nb) == 0) {
@@ -240,11 +296,18 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
                            ROUGE, RESET);
                     return 0;
                 }
+                
+                // Si paralysé, fin du tour
+                if (joueur_paralyse == 1) {
+                    printf("%s⚡ Vous êtes paralysé ! Vous ne pouvez plus attaquer. ⚡%s\n", 
+                           JAUNE, RESET);
+                    break;
+                }
             }
         } else if (choix == 2) {
-            printf("%s⚠️  Competences non implementées !%s\n", JAUNE, RESET);
+            printf("%s⚠️  Compétences non implémentées !%s\n", JAUNE, RESET);
         } else if (choix == 3) {
-            printf("%s⚠️  Inventaire non implementé !%s\n", JAUNE, RESET);
+            printf("%s⚠️  Inventaire non implémenté !%s\n", JAUNE, RESET);
         } else if (choix == 4) {
             printf("%s➡️  Fin du tour...%s\n", CYAN, RESET);
             break;
@@ -255,8 +318,14 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
     
     // fin du tour
     printf("\n%s--- Fin du tour ---%s\n", CYAN, RESET);
-    int cout = 2 + (prof / 150);
-    perdre_oxygene(p, cout);
+    int cout_tour = calculer_conso_oxygene(prof, 2);
+    int etat_oxy = perdre_oxygene(p, cout_tour);
+    
+    // Afficher info selon etat oxygene
+    if (etat_oxy == 2) {
+        printf("%s☠️  Vous êtes en train de vous noyer ! Remontez vite !%s\n", 
+               ROUGE, RESET);
+    }
     
     recuperer_fatigue(p, 1);
     

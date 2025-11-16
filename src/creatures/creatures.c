@@ -31,16 +31,13 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
             } else if (profondeur < 100) {
                 type_creature = (rand() % 2) + 1;
             } else if (profondeur < 250) {
-                // Moyen (100-250m)
                 type_creature = (rand() % 3) + 1;
             } else if (profondeur < 500) {
-                // Profond (250-500m)
                 int choix = rand() % 3;
                 if (choix == 0) type_creature = 0;
                 else if (choix == 1) type_creature = 1;
                 else type_creature = 3;
             } else {
-                // Très profond (500+)
                 type_creature = rand() % 4;
                 if (type_creature == 2) type_creature = 4;
             }
@@ -56,7 +53,7 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].atk_max = 40;
                     creatures[i].defense = 15;
                     creatures[i].vitesse = 3;
-                    strcpy(creatures[i].effet, "aucun");
+                    strcpy(creatures[i].effet, "Frénésie sanguinaire");
                     break;
                 
                 case 1:
@@ -78,11 +75,11 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     pv_max = 40;
                     creatures[i].pv_max = pv_min + rand() % (pv_max - pv_min + 1);
                     creatures[i].pv = creatures[i].pv_max;
-                    creatures[i].atk_min = 8;
-                    creatures[i].atk_max = 15;
+                    creatures[i].atk_min = 12;
+                    creatures[i].atk_max = 18;
                     creatures[i].defense = 3;
                     creatures[i].vitesse = 4;
-                    strcpy(creatures[i].effet, "aucun");
+                    strcpy(creatures[i].effet, "Charge perforante");
                     break;
                     
                 case 3:
@@ -95,7 +92,7 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].atk_max = 28;
                     creatures[i].defense = 10;
                     creatures[i].vitesse = 8;
-                    strcpy(creatures[i].effet, "aucun");
+                    strcpy(creatures[i].effet, "Étreinte tentaculaire");
                     break;
                     
                 case 4:
@@ -108,7 +105,7 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
                     creatures[i].atk_max = 20;
                     creatures[i].defense = 20;
                     creatures[i].vitesse = 2;
-                    strcpy(creatures[i].effet, "aucun");
+                    strcpy(creatures[i].effet, "Carapace durcie");
                     break;
             }
         } else {
@@ -126,15 +123,55 @@ void generer_creatures(CreatureMarine creatures[4], int profondeur) {
     }
 }
 
-void afficher_creature(CreatureMarine creature) {
-    if (creature.vivant && creature.id != -1) {
-        printf("\n=== %s ===\n", creature.nom);
-        printf("PV: %d/%d\n", creature.pv, creature.pv_max);
-        printf("Attaque: %d-%d\n", creature.atk_min, creature.atk_max);
-        printf("Defense: %d\n", creature.defense);
-        printf("Vitesse: %d\n", creature.vitesse);
-        if (strcmp(creature.effet, "aucun") != 0) {
-            printf("Effet special: %s\n", creature.effet);
-        }
+int appliquer_competence_creature(CreatureMarine* creature, int degats_base) {
+    int degats_finaux = degats_base;
+    
+    // Poisson-Epee : "Charge perforante"
+    if (strstr(creature->nom, "Poisson-Épée")) {
+        return degats_finaux;
     }
+    
+    // Meduse : "Piqure paralysante"
+    if (strstr(creature->nom, "Méduse")) {
+        int chance = rand() % 100;
+        if (chance < 25) {
+            printf("%s⚡ La Méduse vous paralyse avec ses tentacules ! ⚡%s\n", 
+                   "\033[35m", "\033[0m");
+            return -1;
+        }
+        return degats_finaux;
+    }
+    
+    // Kraken : "Etreinte tentaculaire"
+    if (strstr(creature->nom, "Kraken")) {
+        creature->attaques_consecutives++;
+        if (creature->attaques_consecutives >= 2) {
+            printf("%s🐙 Le Kraken vous ensérre de ses tentacules ! 🐙%s\n", 
+                   "\033[35m", "\033[0m");
+            printf("%sIl attaque 2 fois consécutivement !%s\n", 
+                   "\033[33m", "\033[0m");
+            creature->attaques_consecutives = 0;
+            return degats_finaux * 2;
+        }
+        return degats_finaux;
+    }
+    
+    // Requin : "Frenesie sanguinaire"
+    if (strstr(creature->nom, "Requin")) {
+        if (creature->pv < creature->pv_max / 2) {
+            printf("%s🦈 Le Requin entre en FRÉNÉSIE SANGUINAIRE ! 🦈%s\n", 
+                   "\033[31m", "\033[0m");
+            printf("%sSes attaques sont 30%% plus puissantes !%s\n", 
+                   "\033[33m", "\033[0m");
+            degats_finaux = (int)(degats_finaux * 1.3);
+        }
+        return degats_finaux;
+    }
+    
+    // Crabe : "Carapace durcie"
+    if (strstr(creature->nom, "Crabe")) {
+        return degats_finaux;
+    }
+
+    return degats_finaux;
 }

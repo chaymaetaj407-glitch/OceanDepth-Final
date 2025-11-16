@@ -10,14 +10,16 @@ typedef struct {
     int atk_max;
     int defense;
     int vitesse;
-    char effet[20];
+    char effet[30];
     int vivant;
+    int attaques_consecutives;
+    int reduction_active;
 } CreatureMarine;
 
 // Genere des creatures selon la profondeur
 void generer_creatures(CreatureMarine creatures[4], int profondeur);
 
-// Affiche les infos d'une creature
-void afficher_creature(CreatureMarine creature);
+// Applique la competence speciale d'une creature
+int appliquer_competence_creature(CreatureMarine* creature, int degats_base);
 
 #endif
