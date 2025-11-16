@@ -48,19 +48,21 @@ void afficher_combat(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
 }
 
 void afficher_menu(Plongeur* p, int attaques_restantes) {
-    printf("\n%s╔════════════════ ACTIONS DISPONIBLES ═══════════════╗%s\n", 
+    printf("\n%s╔════════════════ ACTIONS DISPONIBLES ═══════════════╗%s\n",
            VERT, RESET);
-    printf("%s║%s 1 - Attaquer avec harpon (%d attaque%s restante%s)    %s║%s\n", 
-           VERT, RESET, 
-           attaques_restantes, 
+    printf("%s║%s 1 - Attaquer avec harpon (%d attaque%s restante%s)%s║%s\n",
+           VERT, RESET,
+           attaques_restantes,
            attaques_restantes > 1 ? "s" : "",
            attaques_restantes > 1 ? "s" : "",
            VERT, RESET);
-    printf("%s║%s 2 - ⚡ Décharge Électrique (18 oxygène, dégâts 20–30, zone)%s║%s\n",
+    printf("%s║%s 2 - ⚡ Décharge Électrique (18 oxygène, Dégâts–30)%s  ║%s\n",
            VERT, RESET, VERT, RESET);
-    printf("%s║%s 3 - Consommer objet                                %s║%s\n",
+    printf("%s║%s 3 - 🌀 Tourbillon Aquatique (22 oxygène, -2 vitesse)%s║%s\n",
            VERT, RESET, VERT, RESET);
-    printf("%s║%s 4 - Terminer le tour                               %s║%s\n",
+    printf("%s║%s 4 - Consommer objet                                %s║%s\n",
+           VERT, RESET, VERT, RESET);
+    printf("%s║%s 5 - Terminer le tour                               %s║%s\n",
            VERT, RESET, VERT, RESET);
     printf("%s╚════════════════════════════════════════════════════╝%s\n",
            VERT, RESET);
@@ -89,7 +91,7 @@ void animation_attaque(char* attaquant, char* cible, int degats) {
     printf("\n");
     printf("%s╔════════════════════ COMBAT SOUS-MARIN ════════════════════╗%s\n",
            BLEU, RESET);
-    printf("%s║%s %s attaque %s avec le harpon ! %s║%s\n",
+    printf("%s║%s %s attaque %s avec le harpon ! %s                       ║%s\n",
            BLEU, RESET, attaquant, cible, BLEU, RESET);
     printf("%s║                                                            ║%s\n",
            BLEU, RESET);
@@ -286,9 +288,49 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
         } else if (choix == 3) {
             printf("%s⚠️  Inventaire non implementé !%s\n", JAUNE, RESET);
         } else if (choix == 4) {
-            printf("%s➡️  Fin du tour...%s\n", CYAN, RESET);
-            break;
-        } else {
+            // 🌀 Tourbillon Aquatique
+            int cout_oxygene = 22;
+
+            if (p->oxygene < cout_oxygene) {
+                printf("%s❌ Pas assez d'oxygène pour lancer le Tourbillon Aquatique !%s\n", ROUGE, RESET);
+            } else {
+                printf("%s🌀 Vous invoquez un Tourbillon Aquatique !%s\n", CYAN, RESET);
+
+                // Consomme l'oxygène
+                perdre_oxygene(p, cout_oxygene);
+
+                // Mélange les ennemis vivants
+                int vivant_indices[10];
+                int nb_vivants = 0;
+                for (int i = 0; i < nb; i++) {
+                    if (creatures[i].vivant == 1) {
+                        vivant_indices[nb_vivants++] = i;
+                    }
+                }
+
+                // Mélange simple (Fisher-Yates)
+                for (int i = nb_vivants - 1; i > 0; i--) {
+                    int j = rand() % (i + 1);
+                    if (i != j) {
+                        CreatureMarine temp = creatures[vivant_indices[i]];
+                        creatures[vivant_indices[i]] = creatures[vivant_indices[j]];
+                        creatures[vivant_indices[j]] = temp;
+                    }
+                }
+
+                // Réduction de la vitesse de chaque ennemi vivant
+                for (int i = 0; i < nb; i++) {
+                    if (creatures[i].vivant == 1) {
+                        creatures[i].vitesse -= 2;
+                        if (creatures[i].vitesse < 0) creatures[i].vitesse = 0;
+                    }
+                }
+
+                printf("%s🌪️ Les ennemis sont désorientés ! Leur vitesse diminue de 2.%s\n", JAUNE, RESET);
+                augmenter_fatigue(p, 1);
+            }
+        }
+        else {
             printf("%sChoix invalide !%s\n", ROUGE, RESET);
         }
     }
