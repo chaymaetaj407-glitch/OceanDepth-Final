@@ -56,13 +56,13 @@ void afficher_menu(Plongeur* p, int attaques_restantes) {
            attaques_restantes > 1 ? "s" : "",
            attaques_restantes > 1 ? "s" : "",
            VERT, RESET);
-    printf("%s║%s 2 - Utiliser compétence marine                     %s║%s\n", 
+    printf("%s║%s 2 - ⚡ Décharge Électrique (18 oxygène, dégâts 20–30, zone)%s║%s\n",
            VERT, RESET, VERT, RESET);
-    printf("%s║%s 3 - Consommer objet                                %s║%s\n", 
+    printf("%s║%s 3 - Consommer objet                                %s║%s\n",
            VERT, RESET, VERT, RESET);
-    printf("%s║%s 4 - Terminer le tour                               %s║%s\n", 
+    printf("%s║%s 4 - Terminer le tour                               %s║%s\n",
            VERT, RESET, VERT, RESET);
-    printf("%s╚════════════════════════════════════════════════════╝%s\n", 
+    printf("%s╚════════════════════════════════════════════════════╝%s\n",
            VERT, RESET);
     printf("> ");
 }
@@ -70,40 +70,40 @@ void afficher_menu(Plongeur* p, int attaques_restantes) {
 // calcul simple: attaque - defense
 int calculer_degats(int attaque, int defense, int variable) {
     int degats = attaque;
-    
+
     // ajouter variation si demande
     if (variable == 1) {
         int variation = (rand() % 11) - 5;
         degats = degats + variation;
     }
-    
+
     degats = degats - defense;
-    
+
     // min 1
     if (degats < 1) degats = 1;
-    
+
     return degats;
 }
 
 void animation_attaque(char* attaquant, char* cible, int degats) {
     printf("\n");
-    printf("%s╔════════════════════ COMBAT SOUS-MARIN ════════════════════╗%s\n", 
+    printf("%s╔════════════════════ COMBAT SOUS-MARIN ════════════════════╗%s\n",
            BLEU, RESET);
-    printf("%s║%s %s attaque %s avec le harpon ! %s║%s\n", 
+    printf("%s║%s %s attaque %s avec le harpon ! %s║%s\n",
            BLEU, RESET, attaquant, cible, BLEU, RESET);
-    printf("%s║                                                            ║%s\n", 
+    printf("%s║                                                            ║%s\n",
            BLEU, RESET);
-    printf("%s║%s    PLONGEUR    %sVS%s      CRÉATURE                       %s║%s\n", 
+    printf("%s║%s    PLONGEUR    %sVS%s      CRÉATURE                       %s║%s\n",
            BLEU, RESET, ROUGE, RESET, BLEU, RESET);
-    printf("%s║%s       🤿         %s🎯%s         🦈                           %s║%s\n", 
+    printf("%s║%s       🤿         %s🎯%s         🦈                           %s║%s\n",
            BLEU, RESET, JAUNE, RESET, BLEU, RESET);
-    printf("%s║%s    ════════►   ◄════════                                %s║%s\n", 
+    printf("%s║%s    ════════►   ◄════════                                %s║%s\n",
            BLEU, RESET, BLEU, RESET);
-    printf("%s║                                                            ║%s\n", 
+    printf("%s║                                                            ║%s\n",
            BLEU, RESET);
-    printf("%s║%s 💥 Dégâts infligés: %s%d points%s                           %s║%s\n", 
+    printf("%s║%s 💥 Dégâts infligés: %s%d points%s                           %s║%s\n",
            BLEU, RESET, ROUGE, degats, RESET, BLEU, RESET);
-    printf("%s╚════════════════════════════════════════════════════════════╝%s\n", 
+    printf("%s╚════════════════════════════════════════════════════════════╝%s\n",
            BLEU, RESET);
     printf("\n");
 }
@@ -114,13 +114,13 @@ ResultatAttaque attaquer(Plongeur* p, CreatureMarine* c, int prof) {
     resultat.oxygene_utilise = 0;
     resultat.fatigue_ajoutee = 0;
     resultat.critique = 0;
-    
+
     // check si vivante
     if (c->vivant == 0) return resultat;
-    
+
     // calcul degats
     resultat.degats = calculer_degats(p->attaque, c->defense, 1);
-    
+
     // coup critique 10%
     int chance = rand() % 100;
     if (chance < 10) {
@@ -128,10 +128,10 @@ ResultatAttaque attaquer(Plongeur* p, CreatureMarine* c, int prof) {
         resultat.degats = (int)(resultat.degats * 1.5);
         printf("%s✨ COUP CRITIQUE ! ✨%s\n", JAUNE, RESET);
     }
-    
+
     // afficher
     animation_attaque("Le Plongeur", c->nom, resultat.degats);
-    
+
     // infliger degats
     c->pv = c->pv - resultat.degats;
     if (c->pv <= 0) {
@@ -144,15 +144,15 @@ ResultatAttaque attaquer(Plongeur* p, CreatureMarine* c, int prof) {
         int degats_riposte = calculer_degats((c->atk_min + c->atk_max) / 2, p->defense, 1);
         perdre_vie(p, degats_riposte);
     }
-    
+
     // conso oxygene
     resultat.oxygene_utilise = 2 + (prof / 100);
     perdre_oxygene(p, resultat.oxygene_utilise);
-    
+
     // fatigue
     resultat.fatigue_ajoutee = 1;
     augmenter_fatigue(p, resultat.fatigue_ajoutee);
-    
+
     return resultat;
 }
 
@@ -167,15 +167,15 @@ int compter_vivants(CreatureMarine* creatures, int nb) {
 
 int choisir_cible(CreatureMarine* creatures, int nb) {
     printf("\n%sSélectionnez votre cible:%s\n", GRAS, RESET);
-    
+
     int cibles[10];
     int nb_cibles = 0;
-    
+
     int i;
     for (i = 0; i < nb; i++) {
         if (creatures[i].vivant == 1) {
             cibles[nb_cibles] = i;
-            printf("%s[%d]%s %s (%d/%d PV)\n", 
+            printf("%s[%d]%s %s (%d/%d PV)\n",
                    JAUNE, nb_cibles + 1, RESET,
                    creatures[i].nom,
                    creatures[i].pv,
@@ -183,66 +183,106 @@ int choisir_cible(CreatureMarine* creatures, int nb) {
             nb_cibles++;
         }
     }
-    
+
     printf("%s[0]%s Annuler\n", JAUNE, RESET);
     printf("> ");
-    
+
     int choix;
     if (scanf("%d", &choix) != 1) {
         while (getchar() != '\n');  // vider buffer
         return -1;
     }
-    
+
     if (choix == 0) return -1;
     if (choix < 1 || choix > nb_cibles) {
         printf("%sChoix invalide !%s\n", ROUGE, RESET);
         return -1;
     }
-    
+
     return cibles[choix - 1];
 }
 
 // FIXME: ameliorer cette fonction plus tard
 int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
     afficher_combat(p, creatures, nb, prof);
-    
+
     // actions joueur
     int attaques_max = attaques_possibles(p);
     int attaques_faites = 0;
-    
+
     while (attaques_faites < attaques_max) {
         afficher_menu(p, attaques_max - attaques_faites);
-        
+
         int choix;
         if (scanf("%d", &choix) != 1) {
             while (getchar() != '\n');
             printf("%sEntrée invalide !%s\n", ROUGE, RESET);
             continue;
         }
-        
+
         if (choix == 1) {
             // attaquer
             int cible = choisir_cible(creatures, nb);
             if (cible >= 0) {
                 attaquer(p, &creatures[cible], prof);
                 attaques_faites++;
-                
+
                 // check victoire
                 if (compter_vivants(creatures, nb) == 0) {
-                    printf("\n%s🎉 VICTOIRE ! Toutes les créatures sont vaincues ! 🎉%s\n", 
+                    printf("\n%s🎉 VICTOIRE ! Toutes les créatures sont vaincues ! 🎉%s\n",
                            VERT, RESET);
                     return 0;
                 }
-                
+
                 // check defaite
                 if (plongeur_vivant(p) == 0) {
-                    printf("\n%s💀 DÉFAITE ! Vous avez succombé aux profondeurs... 💀%s\n", 
+                    printf("\n%s💀 DÉFAITE ! Vous avez succombé aux profondeurs... 💀%s\n",
                            ROUGE, RESET);
                     return 0;
                 }
             }
         } else if (choix == 2) {
-            printf("%s⚠️  Competences non implementées !%s\n", JAUNE, RESET);
+            // Compétence : Décharge Électrique
+            int cout_oxygene = 18;
+
+            if (p->oxygene < cout_oxygene) {
+                printf("%s❌ Pas assez d'oxygène pour utiliser la Décharge Électrique !%s\n", ROUGE, RESET);
+            } else {
+                printf("%s⚡ Vous utilisez Décharge Électrique ! ⚡%s\n", JAUNE, RESET);
+
+                // Consommation d'oxygène
+                perdre_oxygene(p, cout_oxygene);
+
+                // Dégâts de zone
+                int total_victimes = 0;
+                for (int i = 0; i < nb; i++) {
+                    if (creatures[i].vivant == 1) {
+                        int degats = 20 + rand() % 11; // 20–30
+                        creatures[i].pv -= degats;
+                        printf("%s💥 %s subit %d dégâts électriques !%s\n",
+                               CYAN, creatures[i].nom, degats, RESET);
+                        if (creatures[i].pv <= 0) {
+                            creatures[i].pv = 0;
+                            creatures[i].vivant = 0;
+                            printf("%s💀 %s est foudroyé !%s\n", VERT, creatures[i].nom, RESET);
+                        }
+                        total_victimes++;
+                    }
+                }
+
+                augmenter_fatigue(p, 2); // plus fatigant qu’une attaque normale
+
+                if (compter_vivants(creatures, nb) == 0) {
+                    printf("\n%s🎉 VICTOIRE ! Toutes les créatures sont éliminées ! 🎉%s\n",
+                           VERT, RESET);
+                    return 0;
+                }
+
+                if (plongeur_vivant(p) == 0) {
+                    printf("\n%s💀 Vous avez succombé après l’effort ! 💀%s\n", ROUGE, RESET);
+                    return 0;
+                }
+            }
         } else if (choix == 3) {
             printf("%s⚠️  Inventaire non implementé !%s\n", JAUNE, RESET);
         } else if (choix == 4) {
@@ -252,23 +292,23 @@ int faire_tour(Plongeur* p, CreatureMarine* creatures, int nb, int prof) {
             printf("%sChoix invalide !%s\n", ROUGE, RESET);
         }
     }
-    
+
     // fin du tour
     printf("\n%s--- Fin du tour ---%s\n", CYAN, RESET);
     int cout = 2 + (prof / 150);
     perdre_oxygene(p, cout);
-    
+
     recuperer_fatigue(p, 1);
-    
+
     if (plongeur_vivant(p) == 0) {
-        printf("\n%s💀 DÉFAITE ! Vous avez succombé aux profondeurs... 💀%s\n", 
+        printf("\n%s💀 DÉFAITE ! Vous avez succombé aux profondeurs... 💀%s\n",
                ROUGE, RESET);
         return 0;
     }
-    
+
     printf("\n%sAppuyez sur Entrée pour continuer...%s", CYAN, RESET);
     while (getchar() != '\n');
     getchar();
-    
+
     return 1;
 }
